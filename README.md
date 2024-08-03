@@ -71,8 +71,13 @@ pip install --upgrade ONZO-AI-Agent
 ## Support
 
 ### Donation
-세상에 좋은 영향을 끼치도록 노력하겠습니다.<br>
-열심히 개발하겠습니다.<br>
+안녕하세요. <br>
+🐥가슴이 웅장해지는 모든것, 뱁새유니버스입니다.🐥<br>
+모든 것에 관심이 많습니다.🌏<br>
+세상에 긍정적인 영향을 끼치고 싶습니다.👍<br>
+현명한 질문을 하려고 노력합니다.🙋🏻<br>
+함께 배우고 성장하면 좋겠습니다.📈<br>
+많은 사람들에게 도움이 될만한 일들을 찾아 제공할 수 있도록 노력하겠습니다.<br>
 https://buymeacoffee.com/sino1232
 
 ### Contact Information
