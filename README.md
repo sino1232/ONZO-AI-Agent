@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-<b>당신을 위해 일하는 ONZO AI Agent</b>
+<b>ONZO AI Agent: 당신과 함께 하는 조력자</b>
 </p>
 
 <p align="center">
@@ -22,9 +22,6 @@ Groq 또는 Local LLM 모델들을 적용할 예정이구요. 다양한 API들�
 3. N과 Z도 회전하면 같고 알파벳 O가 양쪽에 있어 안정감을 준다.
 4. 개방적인 국가다.(중국과 일본과 활발한 교류를 했던 오픈마인드 국가)
 5. 백제 왕 중 가장 업적이 많다.(초대왕이라 미화했다는 설도 있지만...)
-
-
-
 
 ## News
 
@@ -45,16 +42,20 @@ pip install --upgrade ONZO-AI-Agent
 # or `git clone https://github.com/sino1232/ONZO-AI-Agent && cd ONZO-AI-Agent && pip install --upgrade -e .
 ```
 
-1. telegram <br>
-2. groq <br>
+### 기능
+1. 채팅봇 : telegram <br>
+2. LLM : llama3-8b-8192
+3. 자원 : groq LPU(현재까지 개인 무료) <br>
    https://groq.com/ <br>
-3. news api <br>
+4. news api <br>
    https://newsapi.org <br>
+5. reddit api <br>
+   https://www.reddit.com/dev/api/ <br>
 
 ### Configuration
 ```bash
 # ONZO-AI-Agent/config/apikey.txt<br>
-# apikey.txt에서 모든 API 관련 key값을 설정하면 됩니다. 
+# 위 디렉토리에 있는 apikey.txt에서 모든 API 관련 key값을 설정하면 됩니다. 
 ```
 
 ### Usage
