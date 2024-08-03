@@ -1,5 +1,6 @@
 # Python virtual environments
 .venv/
+__pycache__/
 
 # 환경설정 파일
 .env
