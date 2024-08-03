@@ -33,18 +33,17 @@ Groq 또는 Local LLM 모델들을 적용할 예정이구요. 다양한 API들�
 ## Get Started
 
 ### Installation
-
-> Ensure that Python 3.9+ is installed on your system. You can check this by using: `python --version`.  
-> You can use conda like this: `conda create -n metagpt python=3.9 && conda activate metagpt`
+> Python 3.10에서 구동했습니다. 
+> Ensure that Python 3.10+ is installed on your system. You can check this by using: `python --version`.
+> 
+> You can use conda like this: `conda create -n onzo python=3.10 && conda activate metagpt`
 
 ```bash
-pip install --upgrade metagpt
-# or `pip install --upgrade git+https://github.com/geekan/MetaGPT.git`
-# or `git clone https://github.com/geekan/MetaGPT && cd MetaGPT && pip install --upgrade -e .`
+pip install --upgrade ONZO-AI-Agent
+# or `pip install --upgrade git+https://github.com/sino1232/ONZO-AI-Agent.git`
+# git clone https://github.com/sino1232/ONZO-AI-Agent && cd ONZO-AI-Agent    
+# or `git clone https://github.com/sino1232/ONZO-AI-Agent && cd ONZO-AI-Agent && pip install --upgrade -e .
 ```
-
-For detailed installation guidance, please refer to [cli_install](https://docs.deepwisdom.ai/main/en/guide/get_started/installation.html#install-stable-version)
- or [docker_install](https://docs.deepwisdom.ai/main/en/guide/get_started/installation.html#install-with-docker)
 
 1. telegram <br>
 2. groq <br>
@@ -55,45 +54,10 @@ For detailed installation guidance, please refer to [cli_install](https://docs.d
 ### Configuration
 ```bash
 # ONZO-AI-Agent/config/apikey.txt<br>
-```
-
-```yaml
-llm:
-  api_type: "openai"  # or azure / ollama / groq etc. Check LLMType for more options
-  model: "gpt-4-turbo"  # or gpt-3.5-turbo
-  base_url: "https://api.openai.com/v1"  # or forward url / other llm url
-  api_key: "YOUR_API_KEY"
+# apikey.txt에서 모든 API 관련 key값을 설정하면 됩니다. 
 ```
 
 ### Usage
-
-After installation, you can use MetaGPT at CLI
-
-```bash
-metagpt "Create a 2048 game"  # this will create a repo in ./workspace
-```
-
-or use it as library
-
-```python
-from metagpt.software_company import generate_repo, ProjectRepo
-repo: ProjectRepo = generate_repo("Create a 2048 game")  # or ProjectRepo("<path>")
-print(repo)  # it will print the repo structure with files
-```
-
-You can also use [Data Interpreter](https://github.com/geekan/MetaGPT/tree/main/examples/di) to write code:
-
-```python
-import asyncio
-from metagpt.roles.di.data_interpreter import DataInterpreter
-
-async def main():
-    di = DataInterpreter()
-    await di.run("Run data analysis on sklearn Iris dataset, include a plot")
-
-asyncio.run(main())  # or await main() in a jupyter notebook setting
-```
-
 
 ### QuickStart & Demo Video
 
@@ -114,10 +78,6 @@ We will respond to all questions within 2-3 business days.
 
 ## Citation
 
-To stay updated with the latest research and development, follow [@MetaGPT_](https://twitter.com/MetaGPT_) on Twitter. 
-
-To cite [MetaGPT](https://openreview.net/forum?id=VtmBAGCN7o) or [Data Interpreter](https://arxiv.org/abs/2402.18679) in publications, please use the following BibTeX entries.
-
 ```bibtex
 @inproceedings{hong2024metagpt,
       title={Meta{GPT}: Meta Programming for A Multi-Agent Collaborative Framework},
@@ -125,14 +85,6 @@ To cite [MetaGPT](https://openreview.net/forum?id=VtmBAGCN7o) or [Data Interpret
       booktitle={The Twelfth International Conference on Learning Representations},
       year={2024},
       url={https://openreview.net/forum?id=VtmBAGCN7o}
-}
-@misc{hong2024data,
-      title={Data Interpreter: An LLM Agent For Data Science}, 
-      author={Sirui Hong and Yizhang Lin and Bang Liu and Bangbang Liu and Binhao Wu and Danyang Li and Jiaqi Chen and Jiayi Zhang and Jinlin Wang and Li Zhang and Lingyao Zhang and Min Yang and Mingchen Zhuge and Taicheng Guo and Tuo Zhou and Wei Tao and Wenyi Wang and Xiangru Tang and Xiangtao Lu and Xiawu Zheng and Xinbing Liang and Yaying Fei and Yuheng Cheng and Zongze Xu and Chenglin Wu},
-      year={2024},
-      eprint={2402.18679},
-      archivePrefix={arXiv},
-      primaryClass={cs.AI}
 }
 ```
 
