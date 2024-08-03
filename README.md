@@ -66,7 +66,10 @@ pip install --upgrade ONZO-AI-Agent
 
 ## Support
 
-### Contributor form
+### Donation
+세상에 좋은 영향을 끼치도록 노력하겠습니다. 
+열심히 개발하겠습니다.
+https://buymeacoffee.com/sino1232
 
 ### Contact Information
 
