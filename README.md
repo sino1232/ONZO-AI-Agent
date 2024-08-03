@@ -30,10 +30,9 @@ Groq 또는 Local LLM 모델들을 적용할 예정이구요. 다양한 API들�
 ## Get Started
 
 ### Installation
-> Python 3.10에서 구동했습니다. 
+> Python 3.10환경에서 만들었습니다.<br>
 > Ensure that Python 3.10+ is installed on your system. You can check this by using: `python --version`.
-> 
-> You can use conda like this: `conda create -n onzo python=3.10 && conda activate metagpt`
+> You can use conda like this: `conda create -n onzo python=3.10 && conda activate onzo`
 
 ```bash
 pip install --upgrade ONZO-AI-Agent
