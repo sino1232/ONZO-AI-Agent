@@ -28,7 +28,7 @@ def load_config(file_path):
                 config[key] = value
     return config
 
-config = load_config('config/apikey.txt')
+config = load_config('config/apikey2.txt')
 
 TELEGRAM_BOT_TOKEN = config['TELEGRAM_BOT_TOKEN']
 
