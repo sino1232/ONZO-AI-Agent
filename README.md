@@ -79,6 +79,7 @@ pip install --upgrade ONZO-AI-Agent
 함께 배우고 성장하면 좋겠습니다.📈<br>
 많은 사람들에게 도움이 될만한 일들을 찾아 제공할 수 있도록 노력하겠습니다.<br>
 제가 지속적으로 좋은 일을 할 수 있게 후원해주시면 감사하겠습니다.<br>
+도움을 주시는 후원금에 10%는 기부하고 인증하겠습니다.<br>
 https://buymeacoffee.com/sino1232
 
 ### Contact Information
