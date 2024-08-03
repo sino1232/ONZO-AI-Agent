@@ -78,6 +78,7 @@ pip install --upgrade ONZO-AI-Agent
 현명한 질문을 하려고 노력합니다.🙋🏻<br>
 함께 배우고 성장하면 좋겠습니다.📈<br>
 많은 사람들에게 도움이 될만한 일들을 찾아 제공할 수 있도록 노력하겠습니다.<br>
+제가 지속적으로 좋은 일을 할 수 있게 후원해주시면 감사하겠습니다.<br>
 https://buymeacoffee.com/sino1232
 
 ### Contact Information
