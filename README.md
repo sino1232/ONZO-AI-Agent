@@ -5,4 +5,4 @@
 3. news api <br>
    https://newsapi.org <br>
 
-![ONZO AI Agent](images/ONZO-AI-Agent.jpeg.jpg)
+![ONZO AI Agent](images/ONZO-AI-Agent.jpeg)
