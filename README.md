@@ -13,8 +13,13 @@
 <a href="https://huggingface.co/spaces/deepwisdom/MetaGPT" target="_blank"><img alt="Hugging Face" src="https://img.shields.io/badge/%F0%9F%A4%97%20-Hugging%20Face-blue?color=blue&logoColor=white" /></a>
 </p>
 
-ONZO AI Agent를 소개합니다.
-Groq 또는 Local LLM 모델들을 적용할 예정이구요. 다양한 API들을 연결해 서비스들을 제공받아 LLM이 그걸 갖고 수행해주는 AI Agent를 만들려고 합니다.
+ONZO AI Agent를 소개합니다.<br>
+Groq(LPU)를 사용해 llama3-8b-8192 모델을 갖고 다양한 API서비스들을 호출하는 AI Agent를 구축했습니다.<br> 
+Groq은 개인은 현재 무료입니다.<br>
+이후에 혹시 유료가 되거나 사용이 어려울 경우 개인 자원(GPU 6GB이상 PC, 노트북, MACBOOK, 리눅스 등)을 사용해 개인 서버를 구축해 사용하려고 합니다.<br>
+좋은 모델들이 나올때마다 Local LLM 모델을 업데이트할 예정입니다.<br>
+Fine tuning, RAG 등을 통해서 구축할 수 있는 것들을 계속해서 적용해나가 보겠습니다.<br>
+잘 사용해주시고 많은 아이디어 주시면 감사하겠습니다.<br>
 
 온조라 지은 이유 TMI
 1. 국사에서 가장 좋아하는 나라가 백제다.
@@ -31,7 +36,7 @@ Groq 또는 Local LLM 모델들을 적용할 예정이구요. 다양한 API들�
 
 ### Installation
 > Python 3.10환경에서 만들었습니다.<br>
-> Ensure that Python 3.10+ is installed on your system. You can check this by using: `python --version`.
+> Ensure that Python 3.10+ is installed on your system. You can check this by using: `python --version`.<br>
 > You can use conda like this: `conda create -n onzo python=3.10 && conda activate onzo`
 
 ```bash
@@ -71,12 +76,9 @@ pip install --upgrade ONZO-AI-Agent
 https://buymeacoffee.com/sino1232
 
 ### Contact Information
-
 If you have any questions or feedback about this project, please feel free to contact us. We highly appreciate your suggestions!
-
 - **Email:** livemylife9912@gmail.com
 - **GitHub Issues:** For more technical inquiries, you can also create a new issue in our [GitHub repository](https://github.com/sino1232/ONZO-AI-Agent/)
-- 
 We will respond to all questions within 2-3 business days.
 
 ## Citation
