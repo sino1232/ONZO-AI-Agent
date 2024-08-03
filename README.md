@@ -14,6 +14,7 @@
 </p>
 
 ONZO AI Agent를 소개합니다.
+Groq 또는 Local LLM 모델들을 적용할 예정이구요. 다양한 API들을 연결해 서비스들을 제공받아 LLM이 그걸 갖고 수행해주는 AI Agent를 만들려고 합니다.
 
 온조라 지은 이유 TMI
 1. 국사에서 가장 좋아하는 나라가 백제다.
@@ -23,7 +24,6 @@ ONZO AI Agent를 소개합니다.
 5. 백제 왕 중 가장 업적이 많다.(초대왕이라 미화했다는 설도 있지만...)
 
 
-ONZO-AI-Agent/config/apikey.txt<br>
 
 
 ## News
@@ -53,14 +53,9 @@ For detailed installation guidance, please refer to [cli_install](https://docs.d
    https://newsapi.org <br>
 
 ### Configuration
-
-You can init the config of MetaGPT by running the following command, or manually create `~/.metagpt/config2.yaml` file:
 ```bash
-# Check https://docs.deepwisdom.ai/main/en/guide/get_started/configuration.html for more details
-metagpt --init-config  # it will create ~/.metagpt/config2.yaml, just modify it to your needs
+# ONZO-AI-Agent/config/apikey.txt<br>
 ```
-
-You can configure `~/.metagpt/config2.yaml` according to the [example](https://github.com/geekan/MetaGPT/blob/main/config/config2.example.yaml) and [doc](https://docs.deepwisdom.ai/main/en/guide/get_started/configuration.html):
 
 ```yaml
 llm:
@@ -101,11 +96,6 @@ asyncio.run(main())  # or await main() in a jupyter notebook setting
 
 
 ### QuickStart & Demo Video
-- Try it on [MetaGPT Huggingface Space](https://huggingface.co/spaces/deepwisdom/MetaGPT)
-- [Matthew Berman: How To Install MetaGPT - Build A Startup With One Prompt!!](https://youtu.be/uT75J_KG_aY)
-- [Official Demo Video](https://github.com/geekan/MetaGPT/assets/2707039/5e8c1062-8c35-440f-bb20-2b0320f8d27d)
-
-https://github.com/geekan/MetaGPT/assets/34952977/34345016-5d13-489d-b9f9-b82ace413419
 
 ## Tutorial
 
@@ -118,7 +108,7 @@ https://github.com/geekan/MetaGPT/assets/34952977/34345016-5d13-489d-b9f9-b82ace
 If you have any questions or feedback about this project, please feel free to contact us. We highly appreciate your suggestions!
 
 - **Email:** livemylife9912@gmail.com
-- **GitHub Issues:** For more technical inquiries, you can also create a new issue in our [GitHub repository](https://github.com/geekan/metagpt/issues).
+- **GitHub Issues:** For more technical inquiries, you can also create a new issue in our [GitHub repository](https://github.com/sino1232/ONZO-AI-Agent/)
 - 
 We will respond to all questions within 2-3 business days.
 
