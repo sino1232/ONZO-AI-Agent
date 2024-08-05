@@ -54,7 +54,7 @@ pip install --upgrade ONZO-AI-Agent
 4. news api <br>
    https://newsapi.org <br>
 5. reddit api <br>
-   https://www.reddit.com/dev/api/ <br>
+   https://www.reddit.com/prefs/apps <br>
 
 ### Configuration
 ```bash
