@@ -1,50 +1,54 @@
-import logging
 import praw
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_groq import ChatGroq
-from langchain_core.output_parsers import StrOutputParser
+from apibase import APIBase  # APIBase 클래스를 import
 
-logger = logging.getLogger(__name__)
-
-class RedditAPI:
+class RedditAPI(APIBase):
     def __init__(self, client_id, client_secret, user_agent, llm_api_key):
-        self.reddit = praw.Reddit(
-            client_id=client_id,
-            client_secret=client_secret,
-            user_agent=user_agent
-        )
-        self.llm = ChatGroq(
-            temperature=0,
-            model="llama3-8b-8192",
-            api_key=llm_api_key,
-        )
-        self.system_context = "Answer the question from given contexts. Answer in Korean."
-        self.human_with_context = """
-        Context: {context}
+        super().__init__(llm_api_key)
+        try:
+            self.reddit = praw.Reddit(
+                client_id=client_id,
+                client_secret=client_secret,
+                user_agent=user_agent
+            )
+            self.reddit.user.me()  # 인증 테스트
+        except Exception as e:
+            self.logger.error(f"Failed to authenticate Reddit API: {e}")
+            raise
 
-        ---
-
-        Question: {question}
-        """
-        self.prompt_with_context = ChatPromptTemplate.from_messages([("system", self.system_context), ("human", self.human_with_context)])
-        self.chain_with_context = self.prompt_with_context | self.llm | StrOutputParser()
-
-    def get_reddit_posts(self, subreddit, limit=2):
-        subreddit = self.reddit.subreddit(subreddit)
-        hot_posts = subreddit.hot(limit=limit)
+    def get_reddit_posts(self, subreddit=None, limit=2):
         posts = []
-        for post in hot_posts:
-            if not post.stickied:
-                posts.append({
-                    'title': post.title,
-                    'url': post.url,
-                    'score': post.score
-                })
-        return posts
+        try:
+            if subreddit:
+                subreddit = self.reddit.subreddit(subreddit)
+                hot_posts = subreddit.hot(limit=limit)
+            else:
+                hot_posts = self.reddit.front.hot(limit=limit)
+                
+            for post in hot_posts:
+                if not post.stickied:
+                    try:
+                        score = post.score
+                        posts.append({
+                            'title': post.title,
+                            'url': post.url,
+                            'score': score
+                        })
+                    except AttributeError as e:
+                        self.logger.error(f"AttributeError: {e} - post: {post.title}")
+            posts.sort(key=lambda x: x['score'], reverse=True)
+        except Exception as e:
+            self.logger.error(f"Error accessing subreddit: {e}")
+            if subreddit:
+                return self.get_reddit_posts(limit=limit)
+        return posts[:limit]
 
     async def send_reddit_posts(self, update, context):
-        subreddit = ' '.join(context.args) if context.args else 'news'
+        subreddit = ' '.join(context.args) if context.args else None
         posts = self.get_reddit_posts(subreddit)
+        
+        if not posts and subreddit:
+            await update.message.reply_text(f'Not found subreddit "{subreddit}". So I will get a post you may like.')
+            posts = self.get_reddit_posts(None)
         
         if not posts:
             await update.message.reply_text('No posts found.')
@@ -60,11 +64,11 @@ class RedditAPI:
             try:
                 result = self.chain_with_context.invoke({"context": post_text, "question": question})
                 summaries.append((url, result))
-                logger.info('Generated summary for a reddit post')
+                self.logger.info('Generated summary for a reddit post')
             except Exception as e:
-                logger.error(f'Error generating summary: {e}')
+                self.logger.error(f'Error generating summary: {e}')
 
         for url, summary in summaries:
             await context.bot.send_message(chat_id=update.effective_chat.id, text=url)
             await context.bot.send_message(chat_id=update.effective_chat.id, text=f"요약:\n\n{summary}")
-            logger.info('Sent URL and summary to user')
+            self.logger.info('Sent URL and summary to user')
