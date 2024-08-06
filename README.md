@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-<b>당신을 위해 일하는 ONZO AI Agent</b>
+<b>ONZO AI Agent: 당신과 함께 하는 조력자</b>
 </p>
 
 <p align="center">
@@ -13,8 +13,13 @@
 <a href="https://huggingface.co/spaces/deepwisdom/MetaGPT" target="_blank"><img alt="Hugging Face" src="https://img.shields.io/badge/%F0%9F%A4%97%20-Hugging%20Face-blue?color=blue&logoColor=white" /></a>
 </p>
 
-ONZO AI Agent를 소개합니다.
-Groq 또는 Local LLM 모델들을 적용할 예정이구요. 다양한 API들을 연결해 서비스들을 제공받아 LLM이 그걸 갖고 수행해주는 AI Agent를 만들려고 합니다.
+ONZO AI Agent를 소개합니다.<br>
+Groq(LPU)를 사용해 llama3-8b-8192 모델을 갖고 다양한 API서비스들을 호출하는 AI Agent를 구축했습니다.<br> 
+Groq은 개인은 현재 무료입니다.<br>
+이후에 혹시 유료가 되거나 사용이 어려울 경우 개인 자원(GPU 6GB이상 PC, 노트북, MACBOOK, 리눅스 등)을 사용해 개인 서버를 구축해 사용하려고 합니다.<br>
+좋은 모델들이 나올때마다 Local LLM 모델을 업데이트할 예정입니다.<br>
+Fine tuning, RAG 등을 통해서 구축할 수 있는 것들을 계속해서 적용해나가 보겠습니다.<br>
+잘 사용해주시고 많은 아이디어 주시면 감사하겠습니다.<br>
 
 온조라 지은 이유 TMI
 1. 국사에서 가장 좋아하는 나라가 백제다.
@@ -23,9 +28,6 @@ Groq 또는 Local LLM 모델들을 적용할 예정이구요. 다양한 API들�
 4. 개방적인 국가다.(중국과 일본과 활발한 교류를 했던 오픈마인드 국가)
 5. 백제 왕 중 가장 업적이 많다.(초대왕이라 미화했다는 설도 있지만...)
 
-
-
-
 ## News
 
 🌟 Aug. 3, 2024: First line of onzoAIagent code committed.
@@ -33,67 +35,34 @@ Groq 또는 Local LLM 모델들을 적용할 예정이구요. 다양한 API들�
 ## Get Started
 
 ### Installation
-
-> Ensure that Python 3.9+ is installed on your system. You can check this by using: `python --version`.  
-> You can use conda like this: `conda create -n metagpt python=3.9 && conda activate metagpt`
+> Python 3.10환경에서 만들었습니다.<br>
+> Ensure that Python 3.10+ is installed on your system. You can check this by using: `python --version`.<br>
+> You can use conda like this: `conda create -n onzo python=3.10 && conda activate onzo`
 
 ```bash
-pip install --upgrade metagpt
-# or `pip install --upgrade git+https://github.com/geekan/MetaGPT.git`
-# or `git clone https://github.com/geekan/MetaGPT && cd MetaGPT && pip install --upgrade -e .`
+pip install --upgrade ONZO-AI-Agent
+# or `pip install --upgrade git+https://github.com/sino1232/ONZO-AI-Agent.git`
+# git clone https://github.com/sino1232/ONZO-AI-Agent && cd ONZO-AI-Agent    
+# or `git clone https://github.com/sino1232/ONZO-AI-Agent && cd ONZO-AI-Agent && pip install --upgrade -e .
 ```
 
-For detailed installation guidance, please refer to [cli_install](https://docs.deepwisdom.ai/main/en/guide/get_started/installation.html#install-stable-version)
- or [docker_install](https://docs.deepwisdom.ai/main/en/guide/get_started/installation.html#install-with-docker)
-
-1. telegram <br>
-2. groq <br>
+### 기능
+1. 채팅봇 : telegram <br>
+2. LLM : llama3-8b-8192
+3. 자원 : groq LPU(현재까지 개인 무료) <br>
    https://groq.com/ <br>
-3. news api <br>
+4. news api <br>
    https://newsapi.org <br>
+5. reddit api <br>
+   https://www.reddit.com/prefs/apps <br>
 
 ### Configuration
 ```bash
 # ONZO-AI-Agent/config/apikey.txt<br>
-```
-
-```yaml
-llm:
-  api_type: "openai"  # or azure / ollama / groq etc. Check LLMType for more options
-  model: "gpt-4-turbo"  # or gpt-3.5-turbo
-  base_url: "https://api.openai.com/v1"  # or forward url / other llm url
-  api_key: "YOUR_API_KEY"
+# 위 디렉토리에 있는 apikey.txt에서 모든 API 관련 key값을 설정하면 됩니다. 
 ```
 
 ### Usage
-
-After installation, you can use MetaGPT at CLI
-
-```bash
-metagpt "Create a 2048 game"  # this will create a repo in ./workspace
-```
-
-or use it as library
-
-```python
-from metagpt.software_company import generate_repo, ProjectRepo
-repo: ProjectRepo = generate_repo("Create a 2048 game")  # or ProjectRepo("<path>")
-print(repo)  # it will print the repo structure with files
-```
-
-You can also use [Data Interpreter](https://github.com/geekan/MetaGPT/tree/main/examples/di) to write code:
-
-```python
-import asyncio
-from metagpt.roles.di.data_interpreter import DataInterpreter
-
-async def main():
-    di = DataInterpreter()
-    await di.run("Run data analysis on sklearn Iris dataset, include a plot")
-
-asyncio.run(main())  # or await main() in a jupyter notebook setting
-```
-
 
 ### QuickStart & Demo Video
 
@@ -101,38 +70,26 @@ asyncio.run(main())  # or await main() in a jupyter notebook setting
 
 ## Support
 
-### Contributor form
+### Donation
+안녕하세요. <br>
+🐥가슴이 웅장해지는 모든것, 뱁새유니버스입니다.🐥<br>
+모든 것에 관심이 많습니다.🌏<br>
+세상에 긍정적인 영향을 끼치고 싶습니다.👍<br>
+현명한 질문을 하려고 노력합니다.🙋🏻<br>
+함께 배우고 성장하면 좋겠습니다.📈<br>
+많은 사람들에게 도움이 될만한 일들을 찾아 제공할 수 있도록 노력하겠습니다.<br>
+제가 지속적으로 좋은 일을 할 수 있게 후원해주시면 감사하겠습니다.<br>
+도움을 주시는 후원금에 10%는 기부하고 인증하겠습니다.<br>
+https://buymeacoffee.com/sino1232
 
 ### Contact Information
-
 If you have any questions or feedback about this project, please feel free to contact us. We highly appreciate your suggestions!
-
 - **Email:** livemylife9912@gmail.com
 - **GitHub Issues:** For more technical inquiries, you can also create a new issue in our [GitHub repository](https://github.com/sino1232/ONZO-AI-Agent/)
-- 
 We will respond to all questions within 2-3 business days.
 
 ## Citation
 
-To stay updated with the latest research and development, follow [@MetaGPT_](https://twitter.com/MetaGPT_) on Twitter. 
-
-To cite [MetaGPT](https://openreview.net/forum?id=VtmBAGCN7o) or [Data Interpreter](https://arxiv.org/abs/2402.18679) in publications, please use the following BibTeX entries.
-
 ```bibtex
-@inproceedings{hong2024metagpt,
-      title={Meta{GPT}: Meta Programming for A Multi-Agent Collaborative Framework},
-      author={Sirui Hong and Mingchen Zhuge and Jonathan Chen and Xiawu Zheng and Yuheng Cheng and Jinlin Wang and Ceyao Zhang and Zili Wang and Steven Ka Shing Yau and Zijuan Lin and Liyang Zhou and Chenyu Ran and Lingfeng Xiao and Chenglin Wu and J{\"u}rgen Schmidhuber},
-      booktitle={The Twelfth International Conference on Learning Representations},
-      year={2024},
-      url={https://openreview.net/forum?id=VtmBAGCN7o}
-}
-@misc{hong2024data,
-      title={Data Interpreter: An LLM Agent For Data Science}, 
-      author={Sirui Hong and Yizhang Lin and Bang Liu and Bangbang Liu and Binhao Wu and Danyang Li and Jiaqi Chen and Jiayi Zhang and Jinlin Wang and Li Zhang and Lingyao Zhang and Min Yang and Mingchen Zhuge and Taicheng Guo and Tuo Zhou and Wei Tao and Wenyi Wang and Xiangru Tang and Xiangtao Lu and Xiawu Zheng and Xinbing Liang and Yaying Fei and Yuheng Cheng and Zongze Xu and Chenglin Wu},
-      year={2024},
-      eprint={2402.18679},
-      archivePrefix={arXiv},
-      primaryClass={cs.AI}
-}
 ```
 
