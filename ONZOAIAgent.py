@@ -37,8 +37,6 @@ news_api = NewsAPI(api_key=config['NEWS_API_KEY'], llm_api_key=config['LLM_API_K
 reddit_api = RedditAPI(client_id=config['REDDIT_CLIENT_ID'], client_secret=config['REDDIT_CLIENT_SECRET'], user_agent=config['REDDIT_USER_AGENT'], llm_api_key=config['LLM_API_KEY'])
 #stock_api = StockAPI(api_url=config['STOCK_API_URL'], llm_api_key=config['LLM_API_KEY'])
 
-
-# handle_question 함수 수정
 async def handle_question(update, context):
     user_question = update.message.text
     logger.info(f'User asked a question: {user_question}')
@@ -46,18 +44,30 @@ async def handle_question(update, context):
     prompt = f"질문에 대한 답변을 한국어로 100자 이내로 해주세요.\n\n질문: {user_question}"
     
     start_time = time.time()  # Start time for measuring
-    
+
+    # 컨텍스트 데이터 초기화
+    context_texts = ""
+
     if 'articles' in context.user_data and context.user_data['articles']:
         context_texts = "\n\n".join(summary for _, summary in context.user_data['articles'])
+    if 'full_articles' in context.user_data and context.user_data['full_articles']:
+        context_texts += "\n\n".join(context.user_data['full_articles'])
+    
+    if 'reddit_posts' in context.user_data and context.user_data['reddit_posts']:
+        context_texts += "\n\n".join(summary for summary in context.user_data['reddit_posts'])
+    if 'full_reddit_posts' in context.user_data and context.user_data['full_reddit_posts']:
+        context_texts += "\n\n".join(context.user_data['full_reddit_posts'])
+
+    if context_texts:
         input_text = f"Context: {context_texts}\n\n{prompt}"
-        
         llm_start_time = time.time()  # LLM API 호출 시작 시간
         result = news_api.llm.invoke(input_text)
         llm_end_time = time.time()  # LLM API 호출 종료 시간
         
         logger.info(f'LLM API call time with context: {llm_end_time - llm_start_time:.2f} seconds')
         
-        if any(keyword in result for keyword in ["없습니다", "모릅니다", "알 수 없습니다", "정보가 없습니다","There is no","context","이 문서"]) or result.strip() == "" or len(result) < 20:
+        result_content = result.content if hasattr(result, 'content') else str(result)
+        if any(keyword in result_content for keyword in ["없습니다", "모릅니다", "알 수 없습니다", "정보가 없습니다", "There is no", "context", "이 문서"]) or result_content.strip() == "" or len(result_content) < 20:
             logger.info('No relevant information found in the context, using general model')
             llm_start_time = time.time()  # 일반 모델 LLM API 호출 시작 시간
             result = news_api.llm.invoke(prompt)

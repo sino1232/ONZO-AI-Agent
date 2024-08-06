@@ -10,7 +10,7 @@ class NewsAPI(APIBase):
         super().__init__(llm_api_key)
         self.api_key = api_key
 
-    def get_news(self, query, num_articles=2):
+    def get_news(self, query, num_articles=1):
         self.logger.info(f'Fetching news for query: {query}')
         params = {
             'q': query,
@@ -35,6 +35,14 @@ class NewsAPI(APIBase):
         return docs
 
     async def send_news(self, update, context):
+        # 뉴스 관련 컨텍스트 초기화
+        context.user_data['articles'] = []
+        context.user_data['full_articles'] = []
+        
+        # Reddit 관련 컨텍스트 초기화
+        context.user_data['reddit_posts'] = []
+        context.user_data['full_reddit_posts'] = []
+
         query = ' '.join(context.args)
         self.logger.info(f'User requested news with query: {query}')
         articles = self.get_news(query)
@@ -47,9 +55,11 @@ class NewsAPI(APIBase):
         docs = self.load_articles(articles)
         
         summaries = []
+        full_articles = []
         for doc, article in zip(docs, articles):
             url = article['url']
             context_text = doc.page_content
+            full_articles.append(context_text)
             question = "요약해줘"
             try:
                 result = self.chain_with_context.invoke({"context": context_text, "question": question})
@@ -57,9 +67,9 @@ class NewsAPI(APIBase):
                 self.logger.info('Generated summary for an article')
             except Exception as e:
                 self.logger.error(f'Error generating summary: {e}')
-        
+            
         context.user_data['articles'] = summaries
-        context.user_data['full_articles'] = docs
+        context.user_data['full_articles'] = full_articles
 
         for url, summary in summaries:
             await context.bot.send_message(chat_id=update.effective_chat.id, text=url)

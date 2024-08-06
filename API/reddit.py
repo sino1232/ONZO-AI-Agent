@@ -15,7 +15,7 @@ class RedditAPI(APIBase):
             self.logger.error(f"Failed to authenticate Reddit API: {e}")
             raise
 
-    def get_reddit_posts(self, subreddit=None, limit=2):
+    def get_reddit_posts(self, subreddit=None, limit=1):
         posts = []
         try:
             if subreddit:
@@ -41,8 +41,16 @@ class RedditAPI(APIBase):
             if subreddit:
                 return self.get_reddit_posts(limit=limit)
         return posts[:limit]
-
+    
     async def send_reddit_posts(self, update, context):
+        # Reddit 관련 컨텍스트 초기화
+        context.user_data['reddit_posts'] = []
+        context.user_data['full_reddit_posts'] = []
+
+        # 뉴스 관련 컨텍스트 초기화
+        context.user_data['articles'] = []
+        context.user_data['full_articles'] = []
+
         subreddit = ' '.join(context.args) if context.args else None
         posts = self.get_reddit_posts(subreddit)
         
@@ -55,20 +63,26 @@ class RedditAPI(APIBase):
             return
 
         summaries = []
+        full_reddit_posts = []
         for post in posts:
             title = post['title']
             url = post['url']
             score = post['score']
             post_text = f"{title}\n\n{url}\n\nScore: {score}"
+            full_reddit_posts.append(post_text)
             question = "요약해줘"
             try:
                 result = self.chain_with_context.invoke({"context": post_text, "question": question})
-                summaries.append((url, result))
+                summaries.append(result)
                 self.logger.info('Generated summary for a reddit post')
             except Exception as e:
                 self.logger.error(f'Error generating summary: {e}')
 
-        for url, summary in summaries:
+        context.user_data['reddit_posts'] = summaries
+        context.user_data['full_reddit_posts'] = full_reddit_posts
+
+        for url, summary in zip([post['url'] for post in posts], summaries):
             await context.bot.send_message(chat_id=update.effective_chat.id, text=url)
             await context.bot.send_message(chat_id=update.effective_chat.id, text=f"요약:\n\n{summary}")
             self.logger.info('Sent URL and summary to user')
+
