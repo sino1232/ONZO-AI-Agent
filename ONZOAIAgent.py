@@ -11,6 +11,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 # 각 모듈에서 필요한 클래스 가져오기
 from news import NewsAPI
 from reddit import RedditAPI
+from realstate import RealEstateAPI
 
 # 로깅 설정
 logging.basicConfig(
@@ -35,6 +36,7 @@ TELEGRAM_BOT_TOKEN = config['TELEGRAM_BOT_TOKEN']
 
 news_api = NewsAPI(api_key=config['NEWS_API_KEY'], llm_api_key=config['LLM_API_KEY'])
 reddit_api = RedditAPI(client_id=config['REDDIT_CLIENT_ID'], client_secret=config['REDDIT_CLIENT_SECRET'], user_agent=config['REDDIT_USER_AGENT'], llm_api_key=config['LLM_API_KEY'])
+realstate_api = RealEstateAPI(api_key=config['REALSTATE_API_KEY'], llm_api_key=config['LLM_API_KEY'])
 #stock_api = StockAPI(api_url=config['STOCK_API_URL'], llm_api_key=config['LLM_API_KEY'])
 
 async def handle_question(update, context):
@@ -99,6 +101,7 @@ def main():
 
     application.add_handler(CommandHandler("news", news_api.send_news))
     application.add_handler(CommandHandler("reddit", reddit_api.send_reddit_posts))
+    application.add_handler(CommandHandler("realstate", realstate_api.send_real_estate_summaries))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_question))
 
     #서버에 부담을 주고싶지 않다면 poll_interval을 아래와 같이 60초 늘리세요.
