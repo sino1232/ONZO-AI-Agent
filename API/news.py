@@ -2,6 +2,7 @@ import logging
 import requests
 from langchain_community.document_loaders import WebBaseLoader
 from apibase import APIBase  # APIBase 클래스를 import
+from utils.dataManager import DataManager  # APIBase 클래스를 import
 
 logger = logging.getLogger(__name__)
 
@@ -35,13 +36,11 @@ class NewsAPI(APIBase):
         return docs
 
     async def send_news(self, update, context):
-        # 뉴스 관련 컨텍스트 초기화
-        context.user_data['articles'] = []
-        context.user_data['full_articles'] = []
-        
-        # Reddit 관련 컨텍스트 초기화
-        context.user_data['reddit_posts'] = []
-        context.user_data['full_reddit_posts'] = []
+        data_manager = DataManager(context)
+        data_manager.initialize(['articles', 'full_articles','reddit_posts','full_reddit_posts','realestate'])  # 필요한 데이터만 초기화
+     
+        # 초기화 후 user_data의 상태를 로그로 확인
+        self.logger.info(f'User data after initialization: {context.user_data}')
 
         query = ' '.join(context.args)
         self.logger.info(f'User requested news with query: {query}')
