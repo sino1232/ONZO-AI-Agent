@@ -50,16 +50,19 @@ async def handle_question(update, context):
     # 컨텍스트 데이터 초기화
     context_texts = ""
 
+    #News API 
     if 'articles' in context.user_data and context.user_data['articles']:
         context_texts = "\n\n".join(summary for _, summary in context.user_data['articles'])
     if 'full_articles' in context.user_data and context.user_data['full_articles']:
         context_texts += "\n\n".join(context.user_data['full_articles'])
     
+    #Reddit API
     if 'reddit_posts' in context.user_data and context.user_data['reddit_posts']:
         context_texts += "\n\n".join(summary for summary in context.user_data['reddit_posts'])
     if 'full_reddit_posts' in context.user_data and context.user_data['full_reddit_posts']:
         context_texts += "\n\n".join(context.user_data['full_reddit_posts'])
-
+    
+    #부동산 API
     if 'realestate' in context.user_data and context.user_data['realestate']:
         context_texts += "\n\n".join(context.user_data['realestate'])
 

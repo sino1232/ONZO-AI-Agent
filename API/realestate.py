@@ -16,14 +16,55 @@ class RealEstateAPI(APIBase):
         self.api_key = api_key
 
     def get_lawd_cd(self, region_name):
-        # 'bjdData.txt'에서 지역명을 기반으로 법정동 코드를 찾아 반환하는 함수
+        normalized_region_name = region_name.replace(" ", "").lower()  # 입력된 지역명을 소문자로 변환하고 공백 제거
+        best_match = None  # 최적의 매칭을 저장할 변수
+        best_match_length = 0  # 가장 긴 매칭 길이를 저장할 변수
+        
+        self.logger.info(f"Starting search for: {normalized_region_name}")
+
         with open('config/bjdData.txt', 'r', encoding='cp949') as file:
             for line in file:
-                simplified_line = ' '.join(line.split('\t')[1:]).strip().replace(" ", "")
-                if region_name.replace(" ", "") in simplified_line:
-                    return line.split('\t')[0][:5]  # 법정동 코드의 처음 5자리 반환
+                parts = line.strip().split('\t')
+                if len(parts) < 3:
+                      continue
+
+                lawd_cd = parts[0]
+                region_full_name = parts[1].replace(" ", "").lower()  # 법정동 데이터의 지역명을 소문자로 변환하고 공백 제거
+                status = parts[2]
+
+                if status != "존재":
+                    continue
+
+                # 1. 정확히 일치하는 경우 우선 처리
+                if normalized_region_name == region_full_name:
+                    self.logger.info(f"Exact match found: {lawd_cd[:5]} for {region_name}")
+                    return lawd_cd[:5]
+
+                # 2. 부분 일치 중 가장 긴 매칭 찾기
+                if region_full_name in normalized_region_name:
+                    match_length = len(region_full_name)
+                    self.logger.info(f"Partial match found: {region_full_name} (length: {match_length})")
+
+                    if match_length > best_match_length:
+                        best_match = lawd_cd
+                        best_match_length = match_length
+                        self.logger.info(f"New best match updated: {best_match[:5]} with length {match_length}")
+
+        # 3. 가장 긴 매칭 반환
+        if best_match:
+            self.logger.info(f"Returning best match: {best_match[:5]} for {region_name}")
+            return best_match[:5]
+
+        self.logger.info(f"No match found for {region_name}")
         return None
-    
+
+
+
+
+
+
+
+
     def estimate_supply_area(self, exclu_use_ar):
         # 전용면적을 바탕으로 공급면적을 추정 (일반적으로 20%~40%를 더하는 방식)
         estimated_supply_area = exclu_use_ar * 1.3  # 1.3은 전용면적 대비 공급면적의 추정 비율
@@ -105,56 +146,75 @@ class RealEstateAPI(APIBase):
 
     async def send_real_estate_summaries(self, update, context):
         data_manager = DataManager(context)
-        data_manager.initialize(['articles', 'full_articles','reddit_posts','full_reddit_posts','realestate'])  # 필요한 데이터만 초기화
-    
-        if "세종특별자치시" in context.args[1]:
-            if len(context.args) < 3:
-                await update.message.reply_text('올바른 형식으로 입력해 주세요: /realstate DEAL_YMD CITY DONG')
-                return
-            deal_ymd = context.args[0]
-            city = context.args[1]
-            dong = context.args[2]  # 동 이름을 추가로 입력받습니다.
-            region_name = f"{city} {dong}"
-            filter_by_dong = True
+        data_manager.initialize(['articles', 'full_articles', 'reddit_posts', 'full_reddit_posts', 'realestate'])
+
+        # 입력 인수의 개수를 확인하여 필요한 지역 정보를 가져옴
+        deal_ymd = context.args[0]
+        city1 = context.args[1] if len(context.args) > 1 else None
+        city2 = context.args[2] if len(context.args) > 2 else None
+        district_or_dong = context.args[3] if len(context.args) > 3 else None
+        dong = context.args[4] if len(context.args) > 4 else None
+
+        # 동 부분을 추출하기 위한 로직
+        if not dong and district_or_dong and district_or_dong.endswith("동"):
+            dong = district_or_dong
+            district = None
+        elif not dong:
+            district = district_or_dong
         else:
-            if len(context.args) < 3:
-                await update.message.reply_text('올바른 형식으로 입력해 주세요: /realstate DEAL_YMD CITY DISTRICT [DONG]')
-                return
-            deal_ymd = context.args[0]
-            city = context.args[1]
-            district = context.args[2]
-            dong = context.args[3] if len(context.args) > 3 else None  # 동 이름이 없을 경우 None으로 설정
-            region_name = f"{city} {district}"
-            filter_by_dong = dong is not None
+            district = district_or_dong
+
+        self.logger.info(f"Received input - city1: {city1}, city2: {city2}, district: {district}, dong: {dong}")
+
+        # 조건별로 region_name 구성
+        if dong and district:
+            # Case 1: 구와 동이 모두 있는 경우
+            region_name = f"{city1} {city2} {district} {dong}"
+        elif dong and not district:
+            # Case 2: 동만 있고 구가 없는 경우
+            region_name = f"{city1} {city2} {dong}"
+        elif not dong and district:
+            # Case 3: 구만 있고 동이 없는 경우
+            region_name = f"{city1} {city2} {district}"
+        else:
+            # Case 4: 구와 동이 모두 없는 경우
+            region_name = f"{city1} {city2}"
+
+        self.logger.info(f"Constructed region_name: {region_name}")
 
         lawd_cd = self.get_lawd_cd(region_name)
         if not lawd_cd:
             await update.message.reply_text(f'해당 지역의 법정동 코드를 찾을 수 없습니다: {region_name}')
             return
-        
+
         items = self.get_real_estate_data(lawd_cd, deal_ymd)
-        
+
         if not items:
             await update.message.reply_text('해당 날짜에 데이터가 없습니다.')
             return
 
-        # umdNm 값들을 로그에 출력하여 확인
         self.logger.info(f'조회된 데이터의 법정동 이름들: {[item["umdNm"] for item in items]}')
 
-        if filter_by_dong:
-            # 사용자가 입력한 동 이름으로 필터링 (대소문자 및 공백 무시)
-            filtered_items = [
-                item for item in items 
-                if dong.replace(" ", "").lower() in item['umdNm'].replace(" ", "").lower()
-            ]
+        if dong:
+            # dong과 umdNm을 정규화하여 비교
+            dong_normalized = dong.replace(" ", "").lower()
+            self.logger.info(f'dong_normalized: {dong_normalized}')
+            filtered_items = []
+            
+            for item in items:
+                umdNm_normalized = item['umdNm'].replace(" ", "").lower()
+                self.logger.info(f'Comparing dong_normalized: {dong_normalized} with umdNm_normalized: {umdNm_normalized}')
+                if dong_normalized == umdNm_normalized:
+                    filtered_items.append(item)
+            
+            self.logger.info(f'Filtered umdNm values: {[item["umdNm"] for item in filtered_items]}')
         else:
-            # 동 이름 없이 모든 데이터를 선택
             filtered_items = items
 
         self.logger.info(f'필터링된 데이터: {filtered_items}')
 
         if not filtered_items:
-            await update.message.reply_text(f'{dong} 관련 데이터가 없습니다.' if filter_by_dong else '해당 시/군 관련 데이터가 없습니다.')
+            await update.message.reply_text(f'{dong} 관련 데이터가 없습니다.' if dong else '해당 시/군 관련 데이터가 없습니다.')
             return
 
         # 필터링된 데이터 중 최대 10개만 선택
@@ -166,7 +226,7 @@ class RealEstateAPI(APIBase):
             exclu_use_ar = round(float(item['excluUseAr']), 2)
             estimated_supply_area = self.estimate_supply_area(exclu_use_ar)
             pyeong = self.calculate_pyeong(estimated_supply_area)
-                    
+                        
             cleaned_roadNmBonbun = item['roadNmBonbun'].lstrip('0')  # 문자열 앞의 '0'을 모두 제거
 
             context_text = (
@@ -186,19 +246,19 @@ class RealEstateAPI(APIBase):
             )
 
             question = """다음 형식으로 요약해줘.  데이터가 없으면 알수없음으로 표기해줘. 다른 추가 설명 없이, 아래 형식만 반환해줘.:
-                        f"아파트명: {item['aptNm']}\n"
-                        f"동: {item['aptDong']}\n"
-                        f"층수: {item['floor']}층\n"
-                        f"위치: {item['estateAgentSggNm']} {item['umdNm']}\n"
-                        f"거래유형: {item['dealingGbn']}\n"
-                        f"거래금액: {item['dealAmount']}만원\n"
-                        f"거래일자: {item['date']}\n"                        
-                        f"지번: {item['jibun']}\n"
-                        f"도로명: {item['roadNm']}{cleaned_roadNmBonbun}\n
-                        f"건축년도: {item['buildYear']}년\n"
-                        f"전용면적: {exclu_use_ar:.2f}㎡(공급면적 유추계산시 약 {pyeong:.2f}평)\n"
-                        f"매수자: {item['buyerGbn']}\n"
-                        f"매도자: {item['slerGbn']}\n"""
+                            f"아파트명: {item['aptNm']}\n"
+                            f"동: {item['aptDong']}\n"
+                            f"층수: {item['floor']}층\n"
+                            f"위치: {item['estateAgentSggNm']} {item['umdNm']}\n"
+                            f"거래유형: {item['dealingGbn']}\n"
+                            f"거래금액: {item['dealAmount']}만원\n"
+                            f"거래일자: {item['date']}\n"                        
+                            f"지번: {item['jibun']}\n"
+                            f"도로명: {item['roadNm']}{cleaned_roadNmBonbun}\n
+                            f"건축년도: {item['buildYear']}년\n"
+                            f"전용면적: {exclu_use_ar:.2f}㎡(공급면적 유추계산시 약 {pyeong:.2f}평)\n"
+                            f"매수자: {item['buyerGbn']}\n"
+                            f"매도자: {item['slerGbn']}\n"""
             try:
                 result = self.chain_with_context.invoke({"context": context_text, "question": question})
                 summaries.append(result)
