@@ -58,13 +58,6 @@ class RealEstateAPI(APIBase):
         self.logger.info(f"No match found for {region_name}")
         return None
 
-
-
-
-
-
-
-
     def estimate_supply_area(self, exclu_use_ar):
         # 전용면적을 바탕으로 공급면적을 추정 (일반적으로 20%~40%를 더하는 방식)
         estimated_supply_area = exclu_use_ar * 1.3  # 1.3은 전용면적 대비 공급면적의 추정 비율
@@ -146,7 +139,7 @@ class RealEstateAPI(APIBase):
 
     async def send_real_estate_summaries(self, update, context):
         data_manager = DataManager(context)
-        data_manager.initialize(['articles', 'full_articles', 'reddit_posts', 'full_reddit_posts', 'realestate'])
+        data_manager.initialize(['articles', 'full_articles', 'reddit_posts', 'full_reddit_posts', 'realestate','stock_prices', 'full_stock_data'])
 
         # 입력 인수의 개수를 확인하여 필요한 지역 정보를 가져옴
         deal_ymd = context.args[0]

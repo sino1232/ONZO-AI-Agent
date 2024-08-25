@@ -8,10 +8,11 @@ class APIBase:
         self.logger = logging.getLogger(self.__class__.__name__)
         self.llm = ChatGroq(
             temperature=0,
-            model="llama3-8b-8192",
+            # model="llama3-8b-8192",
+            model="llama-3.1-70b-versatile",
             api_key=llm_api_key,
         )
-        self.system_context = "Answer the question from given contexts. Answer in Korean."
+        self.system_context = "Answer the question from given contexts. Always summarize the context in Korean, even if the context is in English."
         self.human_with_context = """
         Context: {context}
 

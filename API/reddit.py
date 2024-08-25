@@ -2,7 +2,6 @@ import praw
 from apibase import APIBase  # APIBase 클래스를 import
 from utils.dataManager import DataManager  # APIBase 클래스를 import
 
-
 class RedditAPI(APIBase):
     def __init__(self, client_id, client_secret, user_agent, llm_api_key):
         super().__init__(llm_api_key)
@@ -29,11 +28,20 @@ class RedditAPI(APIBase):
             for post in hot_posts:
                 if not post.stickied:
                     try:
+                        # Post details
                         score = post.score
+                        post_text = post.selftext  # Post content
+                        
+                        # Fetch comments
+                        post.comments.replace_more(limit=0)  # Avoid "MoreComments" objects
+                        comments = [f"{index+1}. {comment.body}" for index, comment in enumerate(post.comments.list())]
+                        
                         posts.append({
                             'title': post.title,
                             'url': post.url,
-                            'score': score
+                            'score': score,
+                            'content': post_text,
+                            'comments': comments
                         })
                     except AttributeError as e:
                         self.logger.error(f"AttributeError: {e} - post: {post.title}")
@@ -43,11 +51,11 @@ class RedditAPI(APIBase):
             if subreddit:
                 return self.get_reddit_posts(limit=limit)
         return posts[:limit]
-    
+        
     async def send_reddit_posts(self, update, context):
         data_manager = DataManager(context)
-        data_manager.initialize(['articles', 'full_articles','reddit_posts','full_reddit_posts','realestate'])  # 필요한 데이터만 초기화
-    
+        data_manager.initialize(['articles', 'full_articles', 'reddit_posts', 'full_reddit_posts', 'realestate','stock_prices', 'full_stock_data'])  # 필요한 데이터만 초기화
+        
         # 초기화 후 user_data의 상태를 로그로 확인
         self.logger.info(f'User data after initialization: {context.user_data}')
 
@@ -62,27 +70,36 @@ class RedditAPI(APIBase):
             await update.message.reply_text('No posts found.')
             return
 
-        summaries = []
-        full_reddit_posts = []
-        for post in posts:
-            title = post['title']
-            url = post['url']
-            score = post['score']
-            post_text = f"{title}\n\n{url}\n\nScore: {score}"
-            full_reddit_posts.append(post_text)
-            question = "요약해줘"
-            try:
-                result = self.chain_with_context.invoke({"context": post_text, "question": question})
-                summaries.append(result)
-                self.logger.info('Generated summary for a reddit post')
-            except Exception as e:
-                self.logger.error(f'Error generating summary: {e}')
+        post = posts[0]  # Only use the first post
+        title = post['title']
+        url = post['url']
+        score = post['score']
+        content = post['content']
+        comments = post['comments']
+        
+        # Combine post content and comments into a single text
+        contents = f"{title}\n\nContents:{content}\n\nURL:{url}\n\nScore:{score}"
+        combined_text = f"{title}\n\nContents:{content}\n\nComments:\n" + "\n".join(comments)
+        
+        question = "한국어로 요약해줘"
+        try:
+            summary_result = self.chain_with_context.invoke({"context": contents, "question": question})
+            
+            # summary_result가 무엇을 반환하는지 확인하기 위해 로그로 출력
+            self.logger.info(f'summary_result: {summary_result}')
+            
+            # 요약을 파싱하는 대신, 전체 요약을 사용
+            summary = summary_result.strip()
 
-        context.user_data['reddit_posts'] = summaries
-        context.user_data['full_reddit_posts'] = full_reddit_posts
+            self.logger.info('Generated summary for a reddit post')
+        except Exception as e:
+            self.logger.error(f'Error generating summary: {e}')
+            return
 
-        for url, summary in zip([post['url'] for post in posts], summaries):
-            await context.bot.send_message(chat_id=update.effective_chat.id, text=url)
-            await context.bot.send_message(chat_id=update.effective_chat.id, text=f"요약:\n\n{summary}")
-            self.logger.info('Sent URL and summary to user')
-
+        context.user_data['reddit_posts'] = [summary]
+        context.user_data['full_reddit_posts'] = [combined_text]
+        self.logger.info(f'full_reddit_posts {context.user_data["full_reddit_posts"]}')
+        
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=url)
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=f"요약:\n\n{summary}\n\npost:\n\n{content}")
+        self.logger.info('Sent URL and summary to user')
