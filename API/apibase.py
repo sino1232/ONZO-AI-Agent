@@ -9,7 +9,7 @@ class APIBase:
         self.llm = ChatGroq(
             temperature=0,
             # model="llama3-8b-8192",
-            model="llama-3.1-70b-versatile",
+            model="llama3-8b-8192",
             api_key=llm_api_key,
         )
         self.system_context = "Answer the question from given contexts. Always summarize the context in Korean, even if the context is in English."
